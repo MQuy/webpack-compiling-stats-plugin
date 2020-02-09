@@ -69,6 +69,15 @@ class WebpackBuildStats {
     "FlagDependencyUsagePlugin"
   ];
 
+  constructor(options = {}) {
+    this.options = {
+      ignoredPlugins: WebpackBuildStats.ignoredPluginNames,
+      threadhold: 0,
+      log: logStats,
+      ...options
+    };
+  }
+
   apply(compiler) {
     compiler.options.module.rules.forEach((rule, index, rules) => {
       if ("use" in rule) {
@@ -100,33 +109,41 @@ class WebpackBuildStats {
     }
 
     compiler.hooks.done.tap("WebpackBuildStats", () => {
-      console.log("\n~~~~~~~~ Webpack Compiling Stats ~~~~~~~~");
-      logLoaderStats();
-      logPluginStats();
-      console.log("\n");
+      logStats(loaderStats, pluginStats, this.options.threadhold);
     });
   }
 }
 
-function logLoaderStats() {
+function logStats(loaderStats, pluginStats, threadhold) {
+  console.log("\n~~~~~~~~ Webpack Compiling Stats ~~~~~~~~");
+  logLoaderStats(loaderStats, threadhold);
+  logPluginStats(pluginStats, threadhold);
+  console.log("\n");
+}
+
+function logLoaderStats(loaderStats, threadhold) {
   console.log(chalk.cyan("\n⏱️  Loaders"));
   for (let [loaderName, loaderStat] of loaderStats) {
-    console.log(
-      `${loaderName}, from ${formatDate(loaderStat.startedTime)} to ${formatDate(loaderStat.endedTime)}, ${formatTime(
-        loaderStat.totalTime
-      )} / ${loaderStat.modules} (total/modules)`
-    );
+    if (loaderStat.totalTime >= threadhold) {
+      console.log(
+        `${loaderName}, from ${formatDate(loaderStat.startedTime)} to ${formatDate(loaderStat.endedTime)}, ${formatTime(
+          loaderStat.totalTime
+        )} / ${loaderStat.modules} (total/modules)`
+      );
+    }
   }
 }
 
-function logPluginStats() {
+function logPluginStats(pluginStats, threadhold) {
   console.log(chalk.cyan("\n⏱️  Plugins"));
   for (let [pluginName, pluginStat] of pluginStats) {
     let time = 0;
     for (let pluginHook in pluginStat) {
       time += pluginStat[pluginHook];
     }
-    console.log(pluginName, formatTime(time));
+    if (time >= threadhold) {
+      console.log(pluginName, formatTime(time));
+    }
   }
 }
 
@@ -136,7 +153,7 @@ function formatDate(ms) {
 }
 
 function formatTime(ms) {
-  const format = ms > 60000 ? chalk.red : ms > 10000 ? chalk.yellow : chalk.green;
+  const format = ms > 60_000 ? chalk.red : ms > 10_000 ? chalk.yellow : chalk.green;
   return format(prettyms(ms));
 }
 

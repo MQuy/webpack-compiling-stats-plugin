@@ -34,6 +34,24 @@ const webpackConfig = {
 }
 ```
 
+### Configuration
+
+```js
+new CompilingStatsPlugin(options);
+```
+
+#### ignoredPlugins (default: `[native webpack plugins]`)
+
+List of webpack plugins are ignored when analyzing/logging
+
+#### threadhold (default: `0`)
+
+The minimum time is accepted when logging
+
+#### log
+
+The function logs stats
+
 [npm]: https://img.shields.io/npm/v/webpack-compiling-stats-plugin.svg
 [npm-url]: https://npmjs.com/package/webpack-compiling-stats-plugin
 [node]: https://img.shields.io/node/v/webpack-compiling-stats-plugin.svg
