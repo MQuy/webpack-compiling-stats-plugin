@@ -1,0 +1,25 @@
+{
+  "name": "webpack-compiling-stats-plugin",
+  "version": "0.0.1",
+  "description": "Webpack plugin to output compiling stats",
+  "repository": "https://github.com/MQuy/webpack-compiling-stats-plugin",
+  "main": "src/index.js",
+  "keywords": [
+    "webpack",
+    "plugin",
+    "compiling",
+    "stats"
+  ],
+  "author": "MQuy",
+  "license": "MIT",
+  "peerDependencies": {
+    "webpack": "> 3"
+  },
+  "engines": {
+    "node": ">=6.11.5"
+  },
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "pretty-ms": "^5.1.0"
+  }
+}
