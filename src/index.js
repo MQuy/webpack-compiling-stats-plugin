@@ -8,7 +8,7 @@ function normalizeRule(rule) {
   if (typeof rule === "string") {
     return {
       loader: rule,
-      options: {}
+      options: {},
     };
   } else {
     return { ...rule, options: { ...rule.options } };
@@ -16,65 +16,23 @@ function normalizeRule(rule) {
 }
 
 function injectMetaRule(rule) {
+  loaderPath = require.resolve(rule.loader);
+  const { raw } = require(loaderPath);
   Object.defineProperty(rule.options, loaderPathOptionName, {
     enumerable: false,
-    value: require.resolve(rule.loader)
+    value: loaderPath,
   });
-  rule.loader = path.resolve(__dirname, "./loader");
+  rule.loader = raw ? path.resolve(__dirname, "./raw-loader") : path.resolve(__dirname, "./loader");
   return rule;
 }
 
 class WebpackBuildStats {
-  static compilerCompilationNames = [
-    "thisCompilation",
-    "compilation",
-    "make",
-    "afterCompile",
-    "shouldEmit",
-    "emit",
-    "afterEmit"
-  ];
-  static nativedWebpackPlugins = [
-    "NodeEnvironmentPlugin",
-    "JsonpTemplatePlugin",
-    "FetchCompileWasmTemplatePlugin",
-    "FunctionModulePlugin",
-    "NodeSourcePlugin",
-    "LoaderTargetPlugin",
-    "JavascriptModulesPlugin",
-    "JsonModulesPlugin",
-    "WebAssemblyModulesPlugin",
-    "EntryOptionPlugin",
-    "CompatibilityPlugin",
-    "HarmonyModulesPlugin",
-    "AMDPlugin",
-    "RequireJsStuffPlugin",
-    "CommonJsPlugin",
-    "LoaderPlugin",
-    "NodeStuffPlugin",
-    "CommonJsStuffPlugin",
-    "APIPlugin",
-    "ConstPlugin",
-    "UseStrictPlugin",
-    "RequireIncludePlugin",
-    "RequireEnsurePlugin",
-    "RequireContextPlugin",
-    "ImportPlugin",
-    "SystemPlugin",
-    "EnsureChunkConditionsPlugin",
-    "TemplatedPathPlugin",
-    "SingleEntryPlugin",
-    "MultiEntryPlugin",
-    "FlagDependencyExportsPlugin",
-    "FlagDependencyUsagePlugin"
-  ];
-
   constructor(options = {}) {
     this.options = {
       ignoredPlugins: WebpackBuildStats.ignoredPluginNames,
       threadhold: 0,
       log: logStats,
-      ...options
+      ...options,
     };
   }
 
@@ -103,8 +61,8 @@ class WebpackBuildStats {
             tagInfo,
             compilerHookName,
             WebpackBuildStats.nativedWebpackPlugins,
-            WebpackBuildStats.compilerCompilationNames.includes(compilerHookName)
-          )
+            WebpackBuildStats.compilerCompilationNames.includes(compilerHookName),
+          ),
       });
     }
 
@@ -113,6 +71,51 @@ class WebpackBuildStats {
     });
   }
 }
+
+WebpackBuildStats.compilerCompilationNames = [
+  "thisCompilation",
+  "compilation",
+  "make",
+  "afterCompile",
+  "shouldEmit",
+  "emit",
+  "afterEmit",
+];
+
+WebpackBuildStats.nativedWebpackPlugins = [
+  "NodeEnvironmentPlugin",
+  "JsonpTemplatePlugin",
+  "FetchCompileWasmTemplatePlugin",
+  "FunctionModulePlugin",
+  "NodeSourcePlugin",
+  "LoaderTargetPlugin",
+  "JavascriptModulesPlugin",
+  "JsonModulesPlugin",
+  "WebAssemblyModulesPlugin",
+  "EntryOptionPlugin",
+  "CompatibilityPlugin",
+  "HarmonyModulesPlugin",
+  "AMDPlugin",
+  "RequireJsStuffPlugin",
+  "CommonJsPlugin",
+  "LoaderPlugin",
+  "NodeStuffPlugin",
+  "CommonJsStuffPlugin",
+  "APIPlugin",
+  "ConstPlugin",
+  "UseStrictPlugin",
+  "RequireIncludePlugin",
+  "RequireEnsurePlugin",
+  "RequireContextPlugin",
+  "ImportPlugin",
+  "SystemPlugin",
+  "EnsureChunkConditionsPlugin",
+  "TemplatedPathPlugin",
+  "SingleEntryPlugin",
+  "MultiEntryPlugin",
+  "FlagDependencyExportsPlugin",
+  "FlagDependencyUsagePlugin",
+];
 
 function logStats(loaderStats, pluginStats, threadhold) {
   console.log("\n~~~~~~~~ Webpack Compiling Stats ~~~~~~~~");
@@ -127,8 +130,8 @@ function logLoaderStats(loaderStats, threadhold) {
     if (loaderStat.totalTime >= threadhold) {
       console.log(
         `${loaderName}, from ${formatDate(loaderStat.startedTime)} to ${formatDate(loaderStat.endedTime)}, ${formatTime(
-          loaderStat.totalTime
-        )} / ${loaderStat.modules} (total/modules)`
+          loaderStat.totalTime,
+        )} / ${loaderStat.modules} (total/modules)`,
       );
     }
   }
@@ -153,7 +156,7 @@ function formatDate(ms) {
 }
 
 function formatTime(ms) {
-  const format = ms > 60_000 ? chalk.red : ms > 10_000 ? chalk.yellow : chalk.green;
+  const format = ms > 60000 ? chalk.red : ms > 10000 ? chalk.yellow : chalk.green;
   return format(prettyms(ms));
 }
 
@@ -168,7 +171,7 @@ function regsiterCompilationHook(ignoredPluginNames, compilation) {
             traceHook(tapInfo, property);
           }
           return tapInfo;
-        }
+        },
       });
     }
   }

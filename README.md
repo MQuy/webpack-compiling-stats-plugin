@@ -21,6 +21,8 @@ Via yarn:
 $ yarn add -D webpack-compiling-stats-plugin
 ```
 
+![output](https://i.imgur.com/YY4DPUF.png)
+
 ### Usage
 
 ```js
@@ -33,6 +35,8 @@ const webpackConfig = {
   ]
 }
 ```
+
+✍️ when using `thread-loader`, all the same file types have to be placed in the same rule.
 
 ### Configuration
 

@@ -3,6 +3,7 @@ const { getOptions } = require("loader-utils");
 const { loaderPathOptionName, loaderStats } = require("./constants");
 const { performance } = require("perf_hooks");
 
+// NOTE: MQ 2020-02-11 If using the same export functions from loader.js, it breaks the raw-loader
 function forwardLoader(...args) {
   const options = getOptions(this);
   const loaderPath = options[loaderPathOptionName];
@@ -49,7 +50,7 @@ function measureLoader(context, loader, loaderArgs, loaderPath) {
       startedTime: tracedTime,
       endedTime: tracedTime,
       totalTime: 0,
-      modules: 0,
+      modules: 0
     });
   }
 
@@ -93,3 +94,4 @@ function convertToUnixPath(path) {
 
 module.exports = forwardLoader;
 module.exports.pitch = forwardPitch;
+module.exports.raw = true;
