@@ -38,6 +38,30 @@ const webpackConfig = {
 
 ✍️ when using `thread-loader`, all the same file types have to be placed in the same rule.
 
+```js
+rules: [
+  {
+    test: /\.(js|jsx)$/,
+    loader: "eslint-loader",
+    enforce: "pre"
+  },
+  {
+    test: /\.(js|jsx)$/,
+    use: ["thread-loader", "babel-loader"]
+  }
+];
+
+->
+
+rules: [
+  {
+    test: /\.(js|jsx)$/,
+    use: ["thread-loader", "babel-loader", "eslint-loader"]
+  }
+];
+
+```
+
 ### Configuration
 
 ```js
